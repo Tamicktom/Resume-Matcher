@@ -74,3 +74,26 @@ describe('ATSScoreCard', () => {
     }
   );
 });
+
+describe('ATSScoreCard tailoring stage', () => {
+  it('labels a score calculated after tailoring', () => {
+    render(<ATSScoreCard atsScore={atsScore} stage="after" />);
+
+    expect(screen.getByText('tailor.atsScore.afterTailoring')).toBeInTheDocument();
+    expect(screen.queryByText('tailor.atsScore.beforeTailoring')).not.toBeInTheDocument();
+  });
+
+  it('labels a score calculated before tailoring', () => {
+    render(<ATSScoreCard atsScore={atsScore} stage="before" />);
+
+    expect(screen.getByText('tailor.atsScore.beforeTailoring')).toBeInTheDocument();
+    expect(screen.queryByText('tailor.atsScore.afterTailoring')).not.toBeInTheDocument();
+  });
+
+  it('omits the stage when the score is not tied to a tailoring pass', () => {
+    render(<ATSScoreCard atsScore={atsScore} />);
+
+    expect(screen.queryByText('tailor.atsScore.afterTailoring')).not.toBeInTheDocument();
+    expect(screen.queryByText('tailor.atsScore.beforeTailoring')).not.toBeInTheDocument();
+  });
+});

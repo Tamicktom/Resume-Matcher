@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { DiffPreviewModal } from '@/components/tailor/diff-preview-modal';
 import type {
+  ATSScore,
   ResumeDiffSummary,
   ResumeFieldDiff,
 } from '@/components/common/resume_previewer_context';
@@ -168,5 +169,54 @@ describe('DiffPreviewModal', () => {
     expect(error.closest('.overflow-y-auto')).toBeNull();
     // The summary card is content and still scrolls with the body.
     expect(screen.getByText('tailor.diffModal.summary').closest('.overflow-y-auto')).not.toBeNull();
+  });
+});
+
+const atsScore: ATSScore = {
+  overall_score: 72.5,
+  sub_scores: { keyword_match: 70, skills_coverage: 80, section_completeness: 65 },
+  missing_keywords: ['Kubernetes'],
+  injectable_keywords: ['SQL'],
+  recommendations: ['Mention SQL in your summary.'],
+};
+
+describe('DiffPreviewModal ATS score', () => {
+  it('renders the breakdown inside the scrolling body when a score is provided', () => {
+    render(
+      <DiffPreviewModal
+        isOpen
+        onClose={vi.fn()}
+        onReject={vi.fn()}
+        onConfirm={vi.fn()}
+        diffSummary={diffSummary}
+        detailedChanges={detailedChanges}
+        atsScore={atsScore}
+      />
+    );
+
+    const heading = screen.getByRole('heading', { name: 'tailor.atsScore.title' });
+    const body = heading.closest('.overflow-y-auto');
+    const summary = screen.getByText('tailor.diffModal.summary');
+    expect(body).not.toBeNull();
+    expect(body).toContainElement(summary);
+    expect(screen.getByText('tailor.atsScore.afterTailoring')).toBeInTheDocument();
+    expect(heading.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+  });
+
+  it('omits the breakdown when no score is provided', () => {
+    render(
+      <DiffPreviewModal
+        isOpen
+        onClose={vi.fn()}
+        onReject={vi.fn()}
+        onConfirm={vi.fn()}
+        diffSummary={diffSummary}
+        detailedChanges={detailedChanges}
+      />
+    );
+
+    expect(screen.queryByRole('heading', { name: 'tailor.atsScore.title' })).toBeNull();
   });
 });

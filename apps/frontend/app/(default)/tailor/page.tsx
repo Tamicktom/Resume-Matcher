@@ -669,8 +669,10 @@ export default function TailorPage() {
             )}
           </Button>
 
-          {/* ATS Score Breakdown: the last preview's score, kept after the diff modal closes */}
-          {atsResult && <ATSScoreCard atsScore={atsResult} template={atsTemplate} />}
+          {/* ATS score stays on the page after the review modal closes; hidden while it is open. */}
+          {atsResult && !showDiffModal && (
+            <ATSScoreCard atsScore={atsResult} template={atsTemplate} stage="after" />
+          )}
         </div>
       </div>
 
@@ -686,6 +688,8 @@ export default function TailorPage() {
           detailedChanges={pendingResult?.data?.detailed_changes}
           errorMessage={diffConfirmError ?? undefined}
           selectionSummary={pendingResult?.data?.bullet_selection}
+          atsScore={atsResult}
+          template={atsTemplate}
         />
       )}
 

@@ -13,12 +13,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { ATSScoreCard } from '@/components/tailor/ats-score-card';
 import { useTranslations } from '@/lib/i18n';
 import type {
+  ATSScore,
   ResumeDiffSummary,
   ResumeFieldDiff,
 } from '@/components/common/resume_previewer_context';
 import type { BulletSelectionSummary } from '@/lib/api/resume';
+import type { TemplateType } from '@/lib/types/template-settings';
 
 interface DiffPreviewModalProps {
   isOpen: boolean;
@@ -30,6 +33,8 @@ interface DiffPreviewModalProps {
   detailedChanges?: ResumeFieldDiff[];
   errorMessage?: string;
   selectionSummary?: BulletSelectionSummary | null;
+  atsScore?: ATSScore | null;
+  template?: TemplateType;
 }
 
 export function DiffPreviewModal({
@@ -42,6 +47,8 @@ export function DiffPreviewModal({
   detailedChanges,
   errorMessage,
   selectionSummary,
+  atsScore,
+  template,
 }: DiffPreviewModalProps) {
   const { t } = useTranslations();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
@@ -146,6 +153,8 @@ export function DiffPreviewModal({
         </DialogHeader>
 
         <DialogBody className="space-y-4">
+          {atsScore ? <ATSScoreCard atsScore={atsScore} template={template} stage="after" /> : null}
+
           {/* Summary cards */}
           <div className="border-2 border-ink bg-white p-4">
             <PanelHeader level="h3" title={t('tailor.diffModal.summary')} />

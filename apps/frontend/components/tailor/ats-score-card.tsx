@@ -6,10 +6,19 @@ import { useTranslations } from '@/lib/i18n';
 import { isTwoColumnTemplate, type TemplateType } from '@/lib/types/template-settings';
 import { cn } from '@/lib/utils';
 
+type AtsScoreStage = 'before' | 'after';
+
+const STAGE_LABEL_KEYS: Record<AtsScoreStage, string> = {
+  before: 'tailor.atsScore.beforeTailoring',
+  after: 'tailor.atsScore.afterTailoring',
+};
+
 interface ATSScoreCardProps {
   atsScore: ATSScore;
   /** Template the resume will be exported with; drives the layout warning. */
   template?: TemplateType;
+  /** Whether this score is the resume before tailoring or the tailored preview. */
+  stage?: AtsScoreStage;
 }
 
 // Display order; title_match and date_consistency are null when they couldn't be scored.
@@ -94,7 +103,7 @@ function KeywordList({
   );
 }
 
-export function ATSScoreCard({ atsScore, template }: ATSScoreCardProps) {
+export function ATSScoreCard({ atsScore, template, stage }: ATSScoreCardProps) {
   const { t } = useTranslations();
   const { overall_score, sub_scores, missing_keywords, injectable_keywords, recommendations } =
     atsScore;
@@ -104,9 +113,16 @@ export function ATSScoreCard({ atsScore, template }: ATSScoreCardProps) {
       className="space-y-6 border border-ink bg-white p-6 shadow-sw-nested"
     >
       <div className="flex items-end justify-between gap-4">
-        <h2 id="ats-score-heading" className="font-serif text-xl font-bold text-ink">
-          {t('tailor.atsScore.title')}
-        </h2>
+        <div className="flex min-w-0 flex-col gap-1">
+          <h2 id="ats-score-heading" className="font-serif text-xl font-bold text-ink">
+            {t('tailor.atsScore.title')}
+          </h2>
+          {stage ? (
+            <p className="font-mono text-xs uppercase tracking-wider text-steel">
+              {t(STAGE_LABEL_KEYS[stage])}
+            </p>
+          ) : null}
+        </div>
         <p className="flex items-end gap-1">
           <span
             className={cn(

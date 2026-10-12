@@ -816,6 +816,8 @@
       "missingKeywords": "Mots-clés manquants",
       "injectableKeywords": "Ajout sûr (présents dans votre CV principal)",
       "recommendations": "Recommandations",
+      "beforeTailoring": "Avant la personnalisation",
+      "afterTailoring": "Après la personnalisation",
       "twoColumnWarning": "Mise en page sur deux colonnes : de nombreux ATS lisent les colonnes dans le désordre. Passez à un modèle à une colonne dans l'éditeur avant de postuler."
     },
     "regenerateDialog": {

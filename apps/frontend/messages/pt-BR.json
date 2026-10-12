@@ -816,6 +816,8 @@
       "missingKeywords": "Palavras-chave ausentes",
       "injectableKeywords": "Seguras para adicionar (no seu currículo principal)",
       "recommendations": "Recomendações",
+      "beforeTailoring": "Antes da personalização",
+      "afterTailoring": "Depois da personalização",
       "twoColumnWarning": "Layout em duas colunas: muitos ATS leem as colunas fora de ordem. Mude para um modelo de uma coluna no editor antes de se candidatar."
     },
     "regenerateDialog": {

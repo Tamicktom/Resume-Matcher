@@ -1,0 +1,112 @@
+# Local development stack. Hot reload for the API and the Next.js dev server.
+#
+#   export UID="$(id -u)" GID="$(id -g)"
+#   docker compose -f docker-compose-dev.yml up --build
+#
+# App:  http://localhost:3000
+# API:  http://localhost:8000/docs
+# Health: http://localhost:8000/api/v1/health
+#
+# AI provider: copy apps/backend/.env.example to apps/backend/.env, or export
+# LLM_PROVIDER / LLM_API_KEY / LLM_MODEL / LLM_API_BASE before `up`.
+# Empty values are ignored so they do not wipe apps/backend/.env.
+# Ollama on the host: LLM_API_BASE=http://host.docker.internal:11434
+#
+# The Next server renders print pages and proxies /api against 127.0.0.1:8000,
+# and Chromium opens the frontend at 127.0.0.1:3000. Both processes share the
+# backend network namespace so those addresses resolve.
+#
+# Stop: docker compose -f docker-compose-dev.yml down
+# This file does not remove the production stack from docker-compose.yml.
+# Do not publish both on port 3000 at the same time.
+
+name: resume-matcher-dev
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.dev.Dockerfile
+      args:
+        - DEBIAN_MIRROR=${DEBIAN_MIRROR:-}
+        - DEBIAN_SECURITY_MIRROR=${DEBIAN_SECURITY_MIRROR:-}
+        - PIP_INDEX_URL=${PIP_INDEX_URL:-}
+        - PLAYWRIGHT_DOWNLOAD_HOST=${PLAYWRIGHT_DOWNLOAD_HOST:-}
+    image: resume-matcher-backend-dev
+    container_name: resume-matcher-backend-dev
+    init: true
+    shm_size: "1gb"
+    ports:
+      - "${PORT:-3000}:3000"
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - ./apps/backend:/app/backend
+      - uv-cache:/home/appuser/.cache/uv
+    environment:
+      DEV_UID: ${UID:-1000}
+      DEV_GID: ${GID:-1000}
+      HOST: 0.0.0.0
+      PORT: "8000"
+      RELOAD: "true"
+      WATCHFILES_FORCE_POLLING: "true"
+      LLM_PROVIDER: ${LLM_PROVIDER:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_API_BASE: ${LLM_API_BASE:-}
+      LOG_LEVEL: ${LOG_LEVEL:-}
+      LOG_LLM: ${LOG_LLM:-}
+      DATABASE_URL: ${DATABASE_URL:-}
+      DATABASE_SCHEMA: ${DATABASE_SCHEMA:-}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://127.0.0.1:3000}
+    env_file:
+      - path: apps/backend/.env
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      start_period: 180s
+      retries: 20
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.dev.Dockerfile
+    image: resume-matcher-frontend-dev
+    container_name: resume-matcher-frontend-dev
+    init: true
+    network_mode: "service:backend"
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./apps/frontend:/app/frontend
+      - frontend-node-modules:/app/frontend/node_modules
+      - frontend-next:/app/frontend/.next
+    environment:
+      DEV_UID: ${UID:-1000}
+      DEV_GID: ${GID:-1000}
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      WATCHPACK_POLLING: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      BACKEND_ORIGIN: http://127.0.0.1:8000
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      start_period: 90s
+      retries: 15
+    restart: unless-stopped
+
+volumes:
+  uv-cache:
+  frontend-node-modules:
+  frontend-next:

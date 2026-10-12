@@ -816,6 +816,8 @@
       "missingKeywords": "Palabras clave faltantes",
       "injectableKeywords": "Seguras de añadir (en tu currículum maestro)",
       "recommendations": "Recomendaciones",
+      "beforeTailoring": "Antes de la personalización",
+      "afterTailoring": "Después de la personalización",
       "twoColumnWarning": "Diseño a dos columnas: muchos ATS leen las columnas fuera de orden. Cambia a una plantilla de una columna en el editor antes de postular."
     },
     "regenerateDialog": {

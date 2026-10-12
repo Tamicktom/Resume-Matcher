@@ -816,6 +816,8 @@
       "missingKeywords": "不足しているキーワード",
       "injectableKeywords": "追加可能（マスター履歴書に記載あり）",
       "recommendations": "推奨事項",
+      "beforeTailoring": "カスタマイズ前",
+      "afterTailoring": "カスタマイズ後",
       "twoColumnWarning": "2カラムのレイアウト：多くのATSは列を正しい順序で読み取れません。応募前にビルダーで1カラムのテンプレートに切り替えてください。"
     },
     "regenerateDialog": {

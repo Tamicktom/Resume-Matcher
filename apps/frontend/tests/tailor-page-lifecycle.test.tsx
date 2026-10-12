@@ -48,19 +48,26 @@ vi.mock('@/components/tailor/diff-preview-modal', () => ({
     onClose,
     isConfirming,
     errorMessage,
+    atsScore,
   }: {
     onConfirm: () => void;
     onReject: () => void;
     onClose: () => void;
     isConfirming: boolean;
     errorMessage?: string;
+    atsScore?: { overall_score: number } | null;
   }) => (
     <div role="dialog">
-      <button onClick={onConfirm} disabled={isConfirming}>
+      {atsScore ? <p>ats-score-in-modal</p> : null}
+      <button type="button" onClick={onConfirm} disabled={isConfirming}>
         Confirm preview
       </button>
-      <button onClick={onReject}>Reject preview</button>
-      <button onClick={onClose}>Close preview</button>
+      <button type="button" onClick={onReject}>
+        Reject preview
+      </button>
+      <button type="button" onClick={onClose}>
+        Close preview
+      </button>
       {errorMessage && <span>{errorMessage}</span>}
     </div>
   ),
@@ -236,10 +243,14 @@ it.each(['Close preview', 'Reject preview'])(
     render(<TailorPage />);
     await act(async () => {});
     await generate();
-    expect(screen.getByRole('heading', { name: 'tailor.atsScore.title' })).toBeInTheDocument();
+    expect(screen.getByText('ats-score-in-modal')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'tailor.atsScore.title' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: dismiss }));
     expect(screen.queryByRole('button', { name: 'Confirm preview' })).toBeNull();
+    expect(screen.queryByText('ats-score-in-modal')).toBeNull();
     expect(screen.getByRole('heading', { name: 'tailor.atsScore.title' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'tailor.atsScore.title' })).toBeInTheDocument();
+    expect(screen.getByText('tailor.atsScore.afterTailoring')).toBeInTheDocument();
   }
 );
 

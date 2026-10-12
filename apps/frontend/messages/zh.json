@@ -816,6 +816,8 @@
       "missingKeywords": "缺失关键词",
       "injectableKeywords": "可安全添加（主简历中已有）",
       "recommendations": "建议",
+      "beforeTailoring": "定制前",
+      "afterTailoring": "定制后",
       "twoColumnWarning": "双栏布局：许多 ATS 会打乱各栏的阅读顺序。投递前请在简历生成器中切换为单栏模板。"
     },
     "regenerateDialog": {

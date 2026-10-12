@@ -816,6 +816,8 @@
       "missingKeywords": "Missing Keywords",
       "injectableKeywords": "Safe to Add (in your master resume)",
       "recommendations": "Recommendations",
+      "beforeTailoring": "Before tailoring",
+      "afterTailoring": "After tailoring",
       "twoColumnWarning": "Two-column layout: many ATS parsers read columns out of order. Switch to a single-column template in the Builder before applying."
     },
     "regenerateDialog": {
